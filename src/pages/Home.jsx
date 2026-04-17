@@ -7,10 +7,15 @@ function Home() {
   const [search, setSearch] = useState("");
   const { destinations } = useContext(AppContext);
   const continents = ["All", "Europe", "Asia", "Americas", "Africa", "Oceania"];
+  const [continent, setContinent] = useState("All");
 
-  const filteredDestinations = destinations.filter((d) =>
-    d.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredDestinations = destinations.filter((d) => {
+    const matchesSearch = d.name.toLowerCase().includes(search.toLowerCase());
+    const matchesContinent =
+        continent === "All" || d.continent === continent;
+
+    return matchesSearch && matchesContinent;
+  });
 
   return (
     <div className="home">
@@ -27,8 +32,12 @@ function Home() {
         />
         <div className="filters">
             {continents.map((c) => (
-                <button key={c} className="filter-btn">
-                    {c}
+                <button
+                    key={c}
+                    className={`filter-btn ${continent === c ? "active" : ""}`}
+                    onClick={() => setContinent(c)}
+                >
+                {c}
                 </button>
             ))}
         </div>
