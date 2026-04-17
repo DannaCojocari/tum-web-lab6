@@ -9,6 +9,10 @@ function DestinationCard({ destination }) {
         {destination.status}
       </div>
 
+      <div className="overlay">
+        🇬🇷 {destination.country}
+      </div>
+
       <div className="card-body">
         <h3>{destination.name}</h3>
         <p>{destination.description}</p>
