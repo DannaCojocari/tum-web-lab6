@@ -233,6 +233,36 @@ h1, h2, h3 {
   background: green;
 }
 
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.like {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.like svg {
+  width: 20px;
+  height: 20px;
+  transition: 0.2s;
+  color: #aaa;
+}
+
+.like:hover svg {
+  transform: scale(1.2);
+}
+
+.like.active svg {
+  color: red;
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
   .links {

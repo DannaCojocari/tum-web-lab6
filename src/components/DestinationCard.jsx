@@ -1,3 +1,6 @@
+import { FiHeart } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
+
 function DestinationCard({ destination }) {
   return (
     <div className="card">
@@ -9,6 +12,12 @@ function DestinationCard({ destination }) {
       <div className="card-body">
         <h3>{destination.name}</h3>
         <p>{destination.description}</p>
+      </div>
+
+      <div className="card-footer">
+        <button className={`like ${destination.liked ? "active" : ""}`}>
+            {destination.liked ? <FaHeart /> : <FiHeart />}
+        </button>
       </div>
     </div>
   );
