@@ -1,4 +1,6 @@
 import { useState } from "react";
+import destinations from "../data/destination";
+import DestinationCard from "../components/DestinationCard";
 
 function Home() {
   const [search, setSearch] = useState("");
@@ -30,6 +32,11 @@ function Home() {
             <div>❤️ 8 Favorites</div>
             <div>📌 5 Planned</div>
       </section>
+      <div className="grid">
+        {destinations.map((d) => (
+            <DestinationCard key={d.id} destination={d} />
+        ))}
+      </div>
     </div>
   );
 }
