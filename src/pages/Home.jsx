@@ -17,6 +17,10 @@ function Home() {
     return matchesSearch && matchesContinent;
   });
 
+  const visited = destinations.filter((d) => d.status === "Visited").length;
+  const favorites = destinations.filter((d) => d.liked).length;
+  const planned = destinations.filter((d) => d.status === "Planned").length;
+
   return (
     <div className="home">
       <section className="hero">
@@ -43,9 +47,9 @@ function Home() {
         </div>
       </section>
       <section className="stats">
-            <div>🌍 12 Countries Visited</div>
-            <div>❤️ 8 Favorites</div>
-            <div>📌 5 Planned</div>
+            <div>🌍 {visited} Countries Visited</div>
+            <div>❤️ {favorites} Favorites</div>
+            <div>📌 {planned} Planned</div>
       </section>
       <div className="grid">
         {filteredDestinations.map((d) => (
