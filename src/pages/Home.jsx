@@ -1,9 +1,11 @@
 import { useState } from "react";
-import destinations from "../data/destination";
 import DestinationCard from "../components/DestinationCard";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
 function Home() {
   const [search, setSearch] = useState("");
+  const { destinations } = useContext(AppContext);
   const continents = ["All", "Europe", "Asia", "Americas", "Africa", "Oceania"];
 
   return (
