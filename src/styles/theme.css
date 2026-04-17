@@ -97,16 +97,32 @@ h1, h2, h3 {
 
 .hero {
   margin-top: 40px;
+  padding: 40px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    #F5ECD7 0%,
+    #e8d9b5 100%
+  );
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.dark .hero {
+  background: linear-gradient(
+    135deg,
+    #0F1F2E 0%,
+    #1b2c3a 100%
+  );
 }
 
 .hero h1 {
-  font-size: 48px;
+  font-size: 52px;
   margin-bottom: 10px;
 }
 
 .hero p {
-  font-size: 16px;
-  opacity: 0.7;
+  font-size: 18px;
+  opacity: 0.8;
 }
 
 .search {
