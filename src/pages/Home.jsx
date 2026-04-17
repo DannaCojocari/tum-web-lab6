@@ -8,6 +8,10 @@ function Home() {
   const { destinations } = useContext(AppContext);
   const continents = ["All", "Europe", "Asia", "Americas", "Africa", "Oceania"];
 
+  const filteredDestinations = destinations.filter((d) =>
+    d.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="home">
       <section className="hero">
@@ -35,7 +39,7 @@ function Home() {
             <div>📌 5 Planned</div>
       </section>
       <div className="grid">
-        {destinations.map((d) => (
+        {filteredDestinations.map((d) => (
             <DestinationCard key={d.id} destination={d} />
         ))}
       </div>
