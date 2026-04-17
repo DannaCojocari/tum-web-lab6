@@ -25,6 +25,11 @@ function Home() {
             ))}
         </div>
       </section>
+      <section className="stats">
+            <div>🌍 12 Countries Visited</div>
+            <div>❤️ 8 Favorites</div>
+            <div>📌 5 Planned</div>
+      </section>
     </div>
   );
 }
