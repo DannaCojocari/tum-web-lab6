@@ -2,6 +2,7 @@ import { useState } from "react";
 
 function Home() {
   const [search, setSearch] = useState("");
+  const continents = ["All", "Europe", "Asia", "Americas", "Africa", "Oceania"];
 
   return (
     <div className="home">
@@ -16,6 +17,13 @@ function Home() {
           onChange={(e) => setSearch(e.target.value)}
           className="search"
         />
+        <div className="filters">
+            {continents.map((c) => (
+                <button key={c} className="filter-btn">
+                    {c}
+                </button>
+            ))}
+        </div>
       </section>
     </div>
   );

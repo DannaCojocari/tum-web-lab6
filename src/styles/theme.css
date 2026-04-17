@@ -119,6 +119,21 @@ h1, h2, h3 {
   font-size: 14px;
 }
 
+.filters {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: none;
+  background: var(--card);
+  cursor: pointer;
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
   .links {
