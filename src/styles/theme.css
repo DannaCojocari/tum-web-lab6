@@ -91,6 +91,14 @@ h1, h2, h3 {
   height: 22px;
 }
 
+.home {
+  padding: 20px 40px;
+}
+
+.hero {
+  margin-top: 40px;
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
   .links {
