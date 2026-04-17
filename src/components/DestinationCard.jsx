@@ -12,6 +12,14 @@ function DestinationCard({ destination }) {
       <div className="card-body">
         <h3>{destination.name}</h3>
         <p>{destination.description}</p>
+
+        <div className="tags">
+            {destination.tags.map((tag) => (
+                <span key={tag} className="tag">
+                {tag}
+                </span>
+            ))}
+        </div>
       </div>
 
       <div className="card-footer">
