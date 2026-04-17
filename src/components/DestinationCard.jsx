@@ -1,8 +1,20 @@
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
 function DestinationCard({ destination }) {
+  const { destinations, setDestinations } = useContext(AppContext);
+
+  const toggleLike = () => {
+    const updated = destinations.map((d) =>
+        d.id === destination.id ? { ...d, liked: !d.liked } : d
+    );
+
+    setDestinations(updated);
+  };
+
   return (
     <div className="card">
       <img src={destination.image} alt={destination.name} />
@@ -28,7 +40,10 @@ function DestinationCard({ destination }) {
       </div>
 
       <div className="card-footer">
-        <button className={`like ${destination.liked ? "active" : ""}`}>
+        <button
+            className={`like ${destination.liked ? "active" : ""}`}
+            onClick={toggleLike}
+        >
             {destination.liked ? <FaHeart /> : <FiHeart />}
         </button>
 
