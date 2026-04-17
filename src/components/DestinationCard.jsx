@@ -1,5 +1,6 @@
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 function DestinationCard({ destination }) {
   return (
@@ -30,6 +31,10 @@ function DestinationCard({ destination }) {
         <button className={`like ${destination.liked ? "active" : ""}`}>
             {destination.liked ? <FaHeart /> : <FiHeart />}
         </button>
+
+        <Link to={`/destination/${destination.id}`} className="details-btn">
+            View Details →
+        </Link>
       </div>
     </div>
   );

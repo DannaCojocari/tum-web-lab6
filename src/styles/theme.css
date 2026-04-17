@@ -289,6 +289,16 @@ h1, h2, h3 {
   border-radius: 10px;
 }
 
+.details-btn {
+  text-decoration: none;
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 500;
+  background-color: var(--primary);
+  padding: 8px 15px;
+  border-radius: 10px;
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
   .links {
