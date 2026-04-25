@@ -32,6 +32,7 @@ h1, h2, h3 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   position: fixed;
   width: 100%;
+  z-index: 1000;
 }
 
 .logo {
@@ -94,7 +95,7 @@ h1, h2, h3 {
 }
 
 .home {
-  padding: 20px 40px;
+  padding: 100px 20px 40px;
 }
 
 .hero {
@@ -289,18 +290,23 @@ h1, h2, h3 {
   position: absolute;
   top: 10px;
   left: 10px;
-  color: rgb(0, 0, 0);
+  color: var(--text);
   font-size: 14px;
   font-weight: 500;
-  background-color: #fffcfce1;
+  background-color: rgba(255,255,255,0.8);
   padding: 4px 8px;
   border-radius: 10px;
+}
+
+.dark .overlay {
+  background-color: rgba(0,0,0,0.6);
+  color: white;
 }
 
 .details-btn {
   text-decoration: none;
   font-size: 14px;
-  color: #ffffff;
+  color: white;
   font-weight: 500;
   background-color: var(--primary);
   padding: 8px 15px;
@@ -319,7 +325,7 @@ h1, h2, h3 {
 }
 
 .details-card {
-  max-width: 600px;
+  max-width: 60vw;
   margin: -80px auto 40px;
   background: var(--card);
   padding: 25px;
@@ -450,15 +456,51 @@ button:disabled {
 .gallery {
   margin-top: 15px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
 
 .gallery img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
+  max-width: 100%;
+  height: auto;
   border-radius: 10px;
+}
+
+.img-wrapper {
+  display: inline-block;
+  max-width: 100%;
+  position: relative;
+  break-inside: avoid;
+  margin-bottom: 10px;
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  color: white;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* MOBILE */
@@ -485,4 +527,9 @@ button:disabled {
   .grid {
     grid-template-columns: 1fr;
   }
+
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+ 

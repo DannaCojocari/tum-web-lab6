@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 
 function DestinationDetails() {
@@ -47,6 +47,18 @@ function DestinationDetails() {
         reader.readAsDataURL(file);
     });
     };
+
+  const handleDeleteImage = (indexToDelete) => {
+    setImages((prev) => prev.filter((_, i) => i !== indexToDelete));
+  };
+
+  useEffect(() => {
+    if (destination) {
+        setImages(destination.images || []);
+        setStatus(destination.status);
+        setRating(destination.rating || 0);
+    }
+  }, [destination]);
 
   return (
     <div className="details">
@@ -114,7 +126,15 @@ function DestinationDetails() {
         {status === "Visited" && images.length > 0 && (
           <div className="gallery">
             {images.map((img, index) => (
-                <img key={index} src={img} alt="uploaded" />
+                <div className="img-wrapper" key={index}>
+                    <img src={img} alt="uploaded" />
+                    <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteImage(index)}
+                    >
+                        ✕
+                    </button>
+                </div>
             ))}
           </div>
         )}
