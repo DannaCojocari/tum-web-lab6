@@ -14,7 +14,9 @@ function DestinationDetails() {
 
   if (!destination) return <div>Not found</div>;
 
-  // 🔥 SAVE LOGIC
+  const [images, setImages] = useState(destination?.images || []);
+
+  // SAVE LOGIC
   const handleSave = () => {
     const updated = destinations.map((d) => {
       if (d.id === destination.id) {
@@ -22,6 +24,7 @@ function DestinationDetails() {
           ...d,
           status: status,
           rating: rating,
+          images: images
         };
       }
       return d;
@@ -29,6 +32,21 @@ function DestinationDetails() {
 
     setDestinations(updated);
   };
+
+  // Image Upload
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+
+    files.forEach((file) => {
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+        setImages((prev) => [...prev, reader.result]);
+        };
+
+        reader.readAsDataURL(file);
+    });
+    };
 
   return (
     <div className="details">
@@ -93,11 +111,19 @@ function DestinationDetails() {
           </div>
         )}
 
+        {status === "Visited" && images.length > 0 && (
+          <div className="gallery">
+            {images.map((img, index) => (
+                <img key={index} src={img} alt="uploaded" />
+            ))}
+          </div>
+        )}
+
         {/* 📷 UPLOAD (doar dacă Visited) */}
         {status === "Visited" && (
           <div className="photos">
             <p>📷 Upload your photos</p>
-            <input type="file" multiple />
+            <input type="file" multiple onChange={handleImageUpload} />
             <small>Photos are saved locally in your browser</small>
           </div>
         )}
