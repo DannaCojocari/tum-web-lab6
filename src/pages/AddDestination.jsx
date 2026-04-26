@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from 'react-router-dom';
 import { getLocationImage } from '../utils/getImage';
+import { getLocationInfo } from '../utils/getLocation';
 
 function AddDestinationForm({ onClose }) {
   const { destinations, setDestinations } = useContext(AppContext);
@@ -12,11 +13,11 @@ function AddDestinationForm({ onClose }) {
     country: "",
     continent: "Europe",
     description: "",
-    // image: "",
     tags: []
   });
 
   const [loading, setLoading] = useState(false);
+  const [infoLoaded, setInfoLoaded] = useState(false);
 
   const continents = ["Europe", "Asia", "America", "Africa", "Oceania"];
 
@@ -46,6 +47,23 @@ function AddDestinationForm({ onClose }) {
         ? prev.tags.filter((t) => t !== tag)
         : [...prev.tags, tag]
     }));
+  };
+
+  const handleCityBlur = async () => {
+    if (!form.name) return;
+    setLoading(true);
+    
+    const info = await getLocationInfo(form.name);
+    
+    setForm((prev) => ({
+        ...prev,
+        country: info.country || prev.country,
+        continent: info.continent || prev.continent,
+        description: info.description || prev.description,
+    }));
+
+    if (info.country) setInfoLoaded(true);
+    setLoading(false);
   };
 
   // submit
@@ -90,6 +108,7 @@ function AddDestinationForm({ onClose }) {
           placeholder="Destination Name"
           value={form.name}
           onChange={handleChange}
+          onBlur={handleCityBlur}
           required
         />
 
@@ -99,6 +118,8 @@ function AddDestinationForm({ onClose }) {
           placeholder="Country"
           value={form.country}
           onChange={handleChange}
+          readOnly={infoLoaded}
+          style={infoLoaded ? { opacity: 0.6, cursor: "not-allowed" } : {}}
           required
         />
 
@@ -107,6 +128,8 @@ function AddDestinationForm({ onClose }) {
           name="continent"
           value={form.continent}
           onChange={handleChange}
+          disabled={infoLoaded}
+          style={infoLoaded ? { opacity: 0.6, cursor: "not-allowed" } : {}}
         >
           {continents.map((c) => (
             <option key={c}>{c}</option>
@@ -121,15 +144,6 @@ function AddDestinationForm({ onClose }) {
           onChange={handleChange}
           required
         />
-
-        {/* IMAGE */}
-        {/* <input
-          name="image"
-          placeholder="Cover Image URL"
-          value={form.image}
-          onChange={handleChange}
-          required
-        /> */}
 
         {/* TAGS */}
         <div className="tags-select">
