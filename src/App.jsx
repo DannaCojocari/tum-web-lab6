@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -17,7 +17,7 @@ function App() {
         <Route path="/map" element={<WorldMap />} />
         <Route path="/trips" element={<MyTrips />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
