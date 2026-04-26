@@ -25,7 +25,7 @@ const destinations = [
     id: 3,
     name: "Machu Picchu",
     country: "Peru",
-    continent: "Americas",
+    continent: "America",
     image: "https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee",
     tags: ["Adventure", "Mountains"],
     description: "Ancient Incan city in the mountains",
