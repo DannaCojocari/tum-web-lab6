@@ -597,6 +597,112 @@ button:disabled {
   background: gray;
 }
 
+.itinerary {
+  margin-top: 30px;
+}
+
+.itinerary-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.itinerary-top input {
+  width: 60px;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  background: #e6dcc7;
+}
+
+.itinerary-top button {
+  background: var(--primary);
+  color: white;
+}
+
+.day-card {
+  background: #e6dcc7;
+  border-left: 5px solid var(--accent);
+  padding: 15px;
+  border-radius: 14px;
+  margin-bottom: 15px;
+}
+
+.day-card h4 {
+  font-family: 'Playfair Display', serif;
+}
+
+.activity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+  padding-left: 10px;
+  background: linear-gradient(135deg, #F5ECD7 0%, #e8d9b5 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+}
+
+.activity span {
+  flex: 1;
+  min-width: 0;
+  white-space: normal; 
+  overflow-wrap: break-word;
+}
+
+.activity span.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.activity-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.activity-input input,
+.activity-input button {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: none;
+}
+
+.activity-input input {
+  flex: 1;
+}
+
+.activity-input button {
+  background: var(--primary);
+  color: white;
+  margin-top: 0;
+}
+
+.itinerary-note {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-top: 10px;
+}
+
+.activity-delete {
+  margin-left: auto;
+  margin-top: 0;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.activity-delete:hover {
+  color: var(--accent);
+  transform: scale(1.2);
+}
+
 @media (max-width: 900px) {
   .gallery {
     grid-template-columns: repeat(3, 1fr);

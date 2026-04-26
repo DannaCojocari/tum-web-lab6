@@ -8,7 +8,8 @@ const destinations = [
     tags: ["Beach", "City"],
     description: "Beautiful white houses and blue domes",
     status: "Wishlist",
-    liked: false
+    liked: false,
+    itinerary: []
   },
   {
     id: 2,
@@ -19,7 +20,8 @@ const destinations = [
     tags: ["Culture", "Nature"],
     description: "Traditional temples and cherry blossoms",
     status: "Planned",
-    liked: false
+    liked: false,
+    itinerary: []
   },
   {
     id: 3,
@@ -30,7 +32,8 @@ const destinations = [
     tags: ["Adventure", "Mountains"],
     description: "Ancient Incan city in the mountains",
     status: "Visited",
-    liked: true
+    liked: true,
+    itinerary: []
   }
 ];
 

@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
+import ItineraryBuilder from "../components/ItineraryBuilder";
 
 function DestinationDetails() {
   const { id } = useParams();
@@ -146,6 +147,10 @@ function DestinationDetails() {
             <input type="file" multiple onChange={handleImageUpload} />
             <small>Photos are saved locally in your browser</small>
           </div>
+        )}
+
+       {status === "Planned" && (
+            <ItineraryBuilder destination={destination} />
         )}
 
         {/* SAVE BUTTON */}
