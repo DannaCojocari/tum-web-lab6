@@ -1,17 +1,22 @@
 import { useState, useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { useNavigate } from 'react-router-dom';
+import { getLocationImage } from '../utils/getImage';
 
 function AddDestinationForm({ onClose }) {
   const { destinations, setDestinations } = useContext(AppContext);
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: "",
     country: "",
     continent: "Europe",
     description: "",
-    image: "",
+    // image: "",
     tags: []
   });
+
+  const [loading, setLoading] = useState(false);
 
   const continents = ["Europe", "Asia", "America", "Africa", "Oceania"];
 
@@ -44,26 +49,32 @@ function AddDestinationForm({ onClose }) {
   };
 
   // submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const newDestination = {
-      id: Date.now(),
-      ...form,
-      status: "Wishlist",
-      liked: false,
-      rating: 0,
-      images: []
-    };
+    try {
+        const imageUrl = await getLocationImage(form.name);
 
-    const updated = [...destinations, newDestination];
+        const newDestination = {
+        id: Date.now(),
+        ...form,
+        image: imageUrl,
+        status: "Wishlist",
+        liked: false,
+        rating: 0,
+        images: []
+        };
 
-    setDestinations(updated);
-
-    // 🔥 persist
-    localStorage.setItem("destinations", JSON.stringify(updated));
-
-    onClose();
+        const updated = [...destinations, newDestination];
+        setDestinations(updated);
+        localStorage.setItem("destinations", JSON.stringify(updated));
+        onClose();
+    } catch (err) {
+        console.error("Failed to fetch image:", err);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -112,13 +123,13 @@ function AddDestinationForm({ onClose }) {
         />
 
         {/* IMAGE */}
-        <input
+        {/* <input
           name="image"
           placeholder="Cover Image URL"
           value={form.image}
           onChange={handleChange}
           required
-        />
+        /> */}
 
         {/* TAGS */}
         <div className="tags-select">
@@ -137,7 +148,9 @@ function AddDestinationForm({ onClose }) {
 
         {/* ACTIONS */}
         <div className="form-actions">
-          <button type="submit">Add to Wishlist</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Fetching image..." : "Add to Wishlist"}
+          </button>
 
           <button
             type="button"

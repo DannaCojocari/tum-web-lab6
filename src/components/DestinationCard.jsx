@@ -23,7 +23,7 @@ function DestinationCard({ destination }) {
       </div>
 
       <div className="overlay">
-        🇬🇷 {destination.country}
+        {destination.country}
       </div>
 
       <div className="card-body">

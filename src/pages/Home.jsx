@@ -13,10 +13,11 @@ function Home() {
 
   const filteredDestinations = destinations.filter((d) => {
     const matchesSearch = d.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCountry = d.country.toLowerCase().includes(search.toLowerCase());
     const matchesContinent =
         continent === "All" || d.continent === continent;
 
-    return matchesSearch && matchesContinent;
+    return matchesSearch && matchesContinent || matchesCountry && matchesContinent;
   });
 
   const visited = destinations.filter((d) => d.status === "Visited").length;
