@@ -9,45 +9,35 @@ function DestinationDetails() {
 
   const destination = destinations.find((d) => d.id === Number(id));
 
-  // local state (edit mode)
   const [status, setStatus] = useState(destination?.status || "Wishlist");
   const [rating, setRating] = useState(destination?.rating || 0);
+  const [images, setImages] = useState(destination?.images || []);
+  const [toast, setToast] = useState(false);
 
   if (!destination) return <div>Not found</div>;
 
-  const [images, setImages] = useState(destination?.images || []);
-
-  // SAVE LOGIC
   const handleSave = () => {
     const updated = destinations.map((d) => {
       if (d.id === destination.id) {
-        return {
-          ...d,
-          status: status,
-          rating: rating,
-          images: images
-        };
+        return { ...d, status, rating, images };
       }
       return d;
     });
-
     setDestinations(updated);
+    setToast(true);
+    setTimeout(() => setToast(false), 3000);
   };
 
-  // Image Upload
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-
     files.forEach((file) => {
-        const reader = new FileReader();
-
-        reader.onloadend = () => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
         setImages((prev) => [...prev, reader.result]);
-        };
-
-        reader.readAsDataURL(file);
+      };
+      reader.readAsDataURL(file);
     });
-    };
+  };
 
   const handleDeleteImage = (indexToDelete) => {
     setImages((prev) => prev.filter((_, i) => i !== indexToDelete));
@@ -55,29 +45,20 @@ function DestinationDetails() {
 
   useEffect(() => {
     if (destination) {
-        setImages(destination.images || []);
-        setStatus(destination.status);
-        setRating(destination.rating || 0);
+      setImages(destination.images || []);
+      setStatus(destination.status);
+      setRating(destination.rating || 0);
     }
   }, [destination]);
 
   return (
     <div className="details">
-      {/* HERO IMAGE */}
-      <img
-        src={destination.image}
-        alt={destination.name}
-        className="details-hero"
-      />
+      <img src={destination.image} alt={destination.name} className="details-hero" />
 
-      {/* CARD */}
       <div className="details-card">
         <h2>{destination.name}</h2>
-        <p>
-          {destination.country} • {destination.continent}
-        </p>
+        <p>{destination.country} • {destination.continent}</p>
 
-        {/* STATUS SELECTOR */}
         <div className="status-buttons">
           {["Wishlist", "Planned", "Visited"].map((s) => (
             <button
@@ -85,7 +66,7 @@ function DestinationDetails() {
               className={`status-btn ${status === s ? "active " + s.toLowerCase() : ""}`}
               onClick={() => {
                 setStatus(s);
-                if (s !== "Visited") setRating(0); // reset rating dacă nu e visited
+                if (s !== "Visited") setRating(0);
               }}
             >
               {s}
@@ -93,22 +74,17 @@ function DestinationDetails() {
           ))}
         </div>
 
-        {/* DESCRIPTION */}
         <div className="about">
           <h4>About</h4>
           <p>{destination.description}</p>
         </div>
 
-        {/* TAGS */}
         <div className="tags">
           {destination.tags.map((tag) => (
-            <span key={tag} className="tag">
-              {tag}
-            </span>
+            <span key={tag} className="tag">{tag}</span>
           ))}
         </div>
 
-        {/* ⭐ RATING (doar dacă Visited) */}
         {status === "Visited" && (
           <div className="rating">
             <h4>Your Rating</h4>
@@ -127,20 +103,14 @@ function DestinationDetails() {
         {status === "Visited" && images.length > 0 && (
           <div className="gallery">
             {images.map((img, index) => (
-                <div className="img-wrapper" key={index}>
-                    <img src={img} alt="uploaded" />
-                    <button
-                        className="delete-btn"
-                        onClick={() => handleDeleteImage(index)}
-                    >
-                        ✕
-                    </button>
-                </div>
+              <div className="img-wrapper" key={index}>
+                <img src={img} alt="uploaded" />
+                <button className="delete-btn" onClick={() => handleDeleteImage(index)}>✕</button>
+              </div>
             ))}
           </div>
         )}
 
-        {/* 📷 UPLOAD (doar dacă Visited) */}
         {status === "Visited" && (
           <div className="photos">
             <p>📷 Upload your photos</p>
@@ -149,18 +119,29 @@ function DestinationDetails() {
           </div>
         )}
 
-       {status === "Planned" && (
-            <ItineraryBuilder destination={destination} />
+        {status === "Planned" && (
+          <ItineraryBuilder destination={destination} />
         )}
 
-        {/* SAVE BUTTON */}
-        <button
-          onClick={handleSave}
-          disabled={status === "Visited" && rating === 0}
-        >
-          Save
+        <button onClick={handleSave} disabled={(status === "Visited" && rating === 0) || toast}>
+            Save
         </button>
       </div>
+
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: "fixed", top: "80px", right: "24px", minWidth: "300px",
+          background: "var(--card)", color: "var(--text)",
+          padding: "12px 20px", borderRadius: "12px",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.15)",
+          borderLeft: "4px solid #2A6496",
+          fontSize: "14px", fontWeight: 500, zIndex: 9999,
+          animation: "slideIn 0.3s ease"
+        }}>
+          ✅ Changes saved!
+        </div>
+      )}
     </div>
   );
 }

@@ -1323,6 +1323,11 @@ button:not(:disabled):hover {
   opacity: 0.75;
 }
 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 /* ── Responsive Breakpoints ────────────────────────────────── */
 
 /* Large screens (1200px+) */
