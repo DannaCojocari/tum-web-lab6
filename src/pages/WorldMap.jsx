@@ -89,7 +89,7 @@ export default function WorldMap() {
 
     svg.attr("viewBox", `0 0 ${width} ${height}`)
        .attr("width", "100%")
-       .attr("height", "auto");
+       .attr("preserveAspectRatio", "xMidYMid meet");
 
     const projection = d3.geoNaturalEarth1()
       .scale(width / 6.2)

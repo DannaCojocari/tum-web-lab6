@@ -43,14 +43,6 @@ function DestinationDetails() {
     setImages((prev) => prev.filter((_, i) => i !== indexToDelete));
   };
 
-  useEffect(() => {
-    if (destination) {
-      setImages(destination.images || []);
-      setStatus(destination.status);
-      setRating(destination.rating || 0);
-    }
-  }, [destination]);
-
   return (
     <div className="details">
       <img src={destination.image} alt={destination.name} className="details-hero" />
