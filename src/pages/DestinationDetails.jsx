@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
+import { updateDestination } from "../services/api";
 import ItineraryBuilder from "../components/ItineraryBuilder";
 
 function DestinationDetails() {
@@ -13,19 +14,34 @@ function DestinationDetails() {
   const [rating, setRating] = useState(destination?.rating || 0);
   const [images, setImages] = useState(destination?.images || []);
   const [toast, setToast] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   if (!destination) return <div>Not found</div>;
 
-  const handleSave = () => {
-    const updated = destinations.map((d) => {
-      if (d.id === destination.id) {
-        return { ...d, status, rating, images };
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const updated = await updateDestination(destination.id, {
+        status,
+        rating,
+      });
+
+      if (updated.error) {
+        console.error(updated.error);
+        return;
       }
-      return d;
-    });
-    setDestinations(updated);
-    setToast(true);
-    setTimeout(() => setToast(false), 3000);
+
+      setDestinations((prev) =>
+        prev.map((d) => (d.id === destination.id ? { ...d, status, rating } : d))
+      );
+
+      setToast(true);
+      setTimeout(() => setToast(false), 3000);
+    } catch (err) {
+      console.error("Failed to save:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleImageUpload = (e) => {
@@ -72,7 +88,7 @@ function DestinationDetails() {
         </div>
 
         <div className="tags">
-          {destination.tags.map((tag) => (
+          {destination.tags?.map((tag) => (
             <span key={tag} className="tag">{tag}</span>
           ))}
         </div>
@@ -115,12 +131,14 @@ function DestinationDetails() {
           <ItineraryBuilder destination={destination} />
         )}
 
-        <button onClick={handleSave} disabled={(status === "Visited" && rating === 0) || toast}>
-            Save
+        <button
+          onClick={handleSave}
+          disabled={(status === "Visited" && rating === 0) || saving || toast}
+        >
+          {saving ? "Saving..." : "Save"}
         </button>
       </div>
 
-      {/* Toast */}
       {toast && (
         <div style={{
           position: "fixed", top: "80px", right: "24px", minWidth: "300px",
