@@ -1,66 +1,94 @@
-import { useState, useContext } from "react";
-import { AppContext } from "../context/AppContext";
-import DayCard from "./DayCard"; // 🔥 ASTA LIPSEA
+import { useState, useEffect } from "react";
+import {
+  getItineraries,
+  createItinerary,
+  deleteItinerary,
+  createActivity,
+  updateActivity,
+  deleteActivity,
+} from "../services/api";
+import DayCard from "./DayCard";
 
 function ItineraryBuilder({ destination }) {
-  const { destinations, setDestinations } = useContext(AppContext);
-
   const [days, setDays] = useState(3);
+  const [itinerary, setItinerary] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const current = Array.isArray(destination.itinerary)
-    ? destination.itinerary
-    : [];
+  // Load itinerary from API on mount
+  useEffect(() => {
+    if (!destination?.id) return;
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const res = await getItineraries(destination.id);
+        if (res.data) setItinerary(res.data);
+      } catch (err) {
+        console.error("Failed to load itinerary:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
+  }, [destination.id]);
 
-  const updateDestination = (newItinerary) => {
-    const updated = destinations.map((d) =>
-      d.id === destination.id
-        ? { ...d, itinerary: newItinerary }
-        : d
-    );
+  const generateItinerary = async () => {
+    try {
+      // Delete existing days first
+      for (const day of itinerary) {
+        await deleteItinerary(day.id);
+      }
 
-    setDestinations(updated);
-    localStorage.setItem("destinations", JSON.stringify(updated));
-  };
+      // Create new days
+      const newDays = [];
+      for (let i = 1; i <= days; i++) {
+        const day = await createItinerary({ destinationId: destination.id, day: i });
+        newDays.push({ ...day, activities: [] });
+      }
 
-  const generateItinerary = () => {
-    const newItinerary = [];
-
-    for (let i = 1; i <= days; i++) {
-      newItinerary.push({
-        day: i,
-        activities: []
-      });
+      setItinerary(newDays);
+    } catch (err) {
+      console.error("Failed to generate itinerary:", err);
     }
-
-    updateDestination(newItinerary);
   };
 
-  const addActivity = (dayIndex, text) => {
+  const handleAddActivity = async (dayIndex, text) => {
     if (!text) return;
-
-    const updated = [...current];
-    updated[dayIndex].activities.push({
-      text,
-      done: false
-    });
-
-    updateDestination(updated);
+    try {
+      const itineraryId = itinerary[dayIndex].id;
+      const activity = await createActivity({ itineraryId, text });
+      const updated = [...itinerary];
+      updated[dayIndex].activities.push(activity);
+      setItinerary(updated);
+    } catch (err) {
+      console.error("Failed to add activity:", err);
+    }
   };
 
-  const toggleActivity = (dayIndex, actIndex) => {
-    const updated = [...current];
-    updated[dayIndex].activities[actIndex].done =
-      !updated[dayIndex].activities[actIndex].done;
-
-    updateDestination(updated);
+  const handleToggleActivity = async (dayIndex, actIndex) => {
+    try {
+      const activity = itinerary[dayIndex].activities[actIndex];
+      const updated = await updateActivity(activity.id, { done: !activity.done });
+      const newItinerary = [...itinerary];
+      newItinerary[dayIndex].activities[actIndex] = updated;
+      setItinerary(newItinerary);
+    } catch (err) {
+      console.error("Failed to toggle activity:", err);
+    }
   };
 
-  const deleteActivity = (dayIndex, actIndex) => {
-    const updated = [...current];
-    updated[dayIndex].activities.splice(actIndex, 1);
-
-    updateDestination(updated);
+  const handleDeleteActivity = async (dayIndex, actIndex) => {
+    try {
+      const activity = itinerary[dayIndex].activities[actIndex];
+      await deleteActivity(activity.id);
+      const newItinerary = [...itinerary];
+      newItinerary[dayIndex].activities.splice(actIndex, 1);
+      setItinerary(newItinerary);
+    } catch (err) {
+      console.error("Failed to delete activity:", err);
+    }
   };
+
+  if (loading) return <p style={{ opacity: 0.5, marginTop: "16px" }}>Loading itinerary...</p>;
 
   return (
     <div className="itinerary">
@@ -68,31 +96,29 @@ function ItineraryBuilder({ destination }) {
 
       <div className="itinerary-top">
         <span>How many days?</span>
-
         <input
           type="number"
           value={days}
+          min={1}
+          max={30}
           onChange={(e) => setDays(Number(e.target.value))}
         />
-
-        <button onClick={generateItinerary}>
-          Generate Itinerary
-        </button>
+        <button onClick={generateItinerary}>Generate Itinerary</button>
       </div>
 
-      {current.map((day, i) => (
+      {itinerary.map((day, i) => (
         <DayCard
-          key={i}
+          key={day.id}
           day={day}
           index={i}
-          addActivity={addActivity}
-          toggleActivity={toggleActivity}
-          deleteActivity={deleteActivity}
+          addActivity={handleAddActivity}
+          toggleActivity={handleToggleActivity}
+          deleteActivity={handleDeleteActivity}
         />
       ))}
 
       <p className="itinerary-note">
-        Your itinerary is saved locally in your browser
+        Your itinerary is saved to the cloud ☁️
       </p>
     </div>
   );

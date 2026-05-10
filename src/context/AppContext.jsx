@@ -1,30 +1,32 @@
-import { createContext, useState, useEffect } from "react";
-import initialData from "../data/destination";
+import { createContext, useState, useEffect, useContext } from "react";
+import { getDestinations } from "../services/api";
+import { AuthContext } from "./AuthContext";
 
 export const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { token } = useContext(AuthContext);
 
-  // Load from localStorage or fallback to initial data
   useEffect(() => {
-    const saved = localStorage.getItem("destinations");
-    if (saved) {
-      setDestinations(JSON.parse(saved));
-    } else {
-      setDestinations(initialData);
-    }
-  }, []);
-
-  // Save to localStorage
-  useEffect(() => {
-    if (destinations.length > 0) {
-      localStorage.setItem("destinations", JSON.stringify(destinations));
-    }
-  }, [destinations]);
+    if (!token) return;
+    const fetchDestinations = async () => {
+      setLoading(true);
+      try {
+        const res = await getDestinations(100, 0);
+        if (res.data) setDestinations(res.data);
+      } catch (err) {
+        console.error("Failed to fetch destinations:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDestinations();
+  }, [token]);
 
   return (
-    <AppContext.Provider value={{ destinations, setDestinations }}>
+    <AppContext.Provider value={{ destinations, setDestinations, loading }}>
       {children}
     </AppContext.Provider>
   );

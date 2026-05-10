@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
+import { updateDestination } from "../services/api";
+import { getPhotos, addPhoto, deletePhoto } from "../services/photoDB";
 import ItineraryBuilder from "../components/ItineraryBuilder";
 
 function DestinationDetails() {
@@ -11,36 +13,49 @@ function DestinationDetails() {
 
   const [status, setStatus] = useState(destination?.status || "Wishlist");
   const [rating, setRating] = useState(destination?.rating || 0);
-  const [images, setImages] = useState(destination?.images || []);
+  const [photos, setPhotos] = useState([]);
   const [toast, setToast] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!destination) return;
+    getPhotos(destination.id).then(setPhotos);
+  }, [destination?.id]);
 
   if (!destination) return <div>Not found</div>;
 
-  const handleSave = () => {
-    const updated = destinations.map((d) => {
-      if (d.id === destination.id) {
-        return { ...d, status, rating, images };
-      }
-      return d;
-    });
-    setDestinations(updated);
-    setToast(true);
-    setTimeout(() => setToast(false), 3000);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const updated = await updateDestination(destination.id, { status, rating });
+      if (updated.error) { console.error(updated.error); return; }
+      setDestinations((prev) =>
+        prev.map((d) => (d.id === destination.id ? { ...d, status, rating } : d))
+      );
+      setToast(true);
+      setTimeout(() => setToast(false), 3000);
+    } catch (err) {
+      console.error("Failed to save:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     files.forEach((file) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImages((prev) => [...prev, reader.result]);
+      reader.onloadend = async () => {
+        const newId = await addPhoto(destination.id, reader.result);
+        setPhotos((prev) => [...prev, { id: newId, destinationId: destination.id, data: reader.result }]);
       };
       reader.readAsDataURL(file);
     });
   };
 
-  const handleDeleteImage = (indexToDelete) => {
-    setImages((prev) => prev.filter((_, i) => i !== indexToDelete));
+  const handleDeletePhoto = async (photoId) => {
+    await deletePhoto(photoId);
+    setPhotos((prev) => prev.filter((p) => p.id !== photoId));
   };
 
   return (
@@ -56,10 +71,7 @@ function DestinationDetails() {
             <button
               key={s}
               className={`status-btn ${status === s ? "active " + s.toLowerCase() : ""}`}
-              onClick={() => {
-                setStatus(s);
-                if (s !== "Visited") setRating(0);
-              }}
+              onClick={() => { setStatus(s); if (s !== "Visited") setRating(0); }}
             >
               {s}
             </button>
@@ -72,7 +84,7 @@ function DestinationDetails() {
         </div>
 
         <div className="tags">
-          {destination.tags.map((tag) => (
+          {destination.tags?.map((tag) => (
             <span key={tag} className="tag">{tag}</span>
           ))}
         </div>
@@ -81,23 +93,17 @@ function DestinationDetails() {
           <div className="rating">
             <h4>Your Rating</h4>
             {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                onClick={() => setRating(star)}
-                className={star <= rating ? "filled" : ""}
-              >
-                ⭐
-              </span>
+              <span key={star} onClick={() => setRating(star)} className={star <= rating ? "filled" : ""}>⭐</span>
             ))}
           </div>
         )}
 
-        {status === "Visited" && images.length > 0 && (
+        {status === "Visited" && photos.length > 0 && (
           <div className="gallery">
-            {images.map((img, index) => (
-              <div className="img-wrapper" key={index}>
-                <img src={img} alt="uploaded" />
-                <button className="delete-btn" onClick={() => handleDeleteImage(index)}>✕</button>
+            {photos.map((photo) => (
+              <div className="img-wrapper" key={photo.id}>
+                <img src={photo.data} alt="uploaded" />
+                <button className="delete-btn" onClick={() => handleDeletePhoto(photo.id)}>✕</button>
               </div>
             ))}
           </div>
@@ -106,8 +112,8 @@ function DestinationDetails() {
         {status === "Visited" && (
           <div className="photos">
             <p>📷 Upload your photos</p>
-            <input type="file" multiple onChange={handleImageUpload} />
-            <small>Photos are saved locally in your browser</small>
+            <input type="file" multiple accept="image/*" onChange={handleImageUpload} />
+            <small>Photos are saved in your browser's IndexedDB</small>
           </div>
         )}
 
@@ -115,12 +121,11 @@ function DestinationDetails() {
           <ItineraryBuilder destination={destination} />
         )}
 
-        <button onClick={handleSave} disabled={(status === "Visited" && rating === 0) || toast}>
-            Save
+        <button onClick={handleSave} disabled={(status === "Visited" && rating === 0) || saving || toast}>
+          {saving ? "Saving..." : "Save"}
         </button>
       </div>
 
-      {/* Toast */}
       {toast && (
         <div style={{
           position: "fixed", top: "80px", right: "24px", minWidth: "300px",

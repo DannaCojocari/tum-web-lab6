@@ -1,6 +1,6 @@
 import { db } from "../config/db.js";
 import { destinations } from "../db/schema.js";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 
 // GET /api/destinations?limit=10&offset=0
 export const getAll = async (req, res, next) => {
@@ -16,7 +16,12 @@ export const getAll = async (req, res, next) => {
       .limit(limit)
       .offset(offset);
 
-    const total = await db.$count(destinations);
+    const totalResult = await db
+      .select({ count: count() })
+      .from(destinations)
+      .where(eq(destinations.userId, userId));
+
+    const total = totalResult[0]?.count ?? 0;
 
     res.json({
       data: rows,
