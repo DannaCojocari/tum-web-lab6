@@ -3,6 +3,7 @@ import { authenticate, requirePermission } from "../middleware/auth.js";
 import {
   getAll,
   getOne,
+  getPublic,
   create,
   update,
   remove,
@@ -16,6 +17,29 @@ const router = Router();
  *   name: Destinations
  *   description: Destination management
  */
+
+/**
+ * @swagger
+ * /api/destinations/public:
+ *   get:
+ *     summary: Get public default destinations (no auth required)
+ *     tags: [Destinations]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: Paginated list of default destinations
+ */
+router.get("/public", getPublic);
 
 /**
  * @swagger

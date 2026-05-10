@@ -1,6 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
 import { updateDestination } from "../services/api";
 import { getPhotos, addPhoto, deletePhoto } from "../services/photoDB";
 import ItineraryBuilder from "../components/ItineraryBuilder";
@@ -8,8 +9,10 @@ import ItineraryBuilder from "../components/ItineraryBuilder";
 function DestinationDetails() {
   const { id } = useParams();
   const { destinations, setDestinations } = useContext(AppContext);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const destination = destinations.find((d) => d.id === Number(id));
+  const destination = destinations.find((d) => d.id === Number(id) || d.id === id);
 
   const [status, setStatus] = useState(destination?.status || "Wishlist");
   const [rating, setRating] = useState(destination?.rating || 0);
@@ -66,12 +69,22 @@ function DestinationDetails() {
         <h2>{destination.name}</h2>
         <p>{destination.country} • {destination.continent}</p>
 
+        {!user && (
+          <div className="visitor-banner">
+            🔒 <Link to="/auth">Login</Link> to save status, rate and build itineraries
+          </div>
+        )}
+
         <div className="status-buttons">
           {["Wishlist", "Planned", "Visited"].map((s) => (
             <button
               key={s}
               className={`status-btn ${status === s ? "active " + s.toLowerCase() : ""}`}
-              onClick={() => { setStatus(s); if (s !== "Visited") setRating(0); }}
+              onClick={() => {
+                if (!user) { navigate("/auth"); return; }
+                setStatus(s);
+                if (s !== "Visited") setRating(0);
+              }}
             >
               {s}
             </button>
@@ -117,13 +130,15 @@ function DestinationDetails() {
           </div>
         )}
 
-        {status === "Planned" && (
+        {status === "Planned" && user && (
           <ItineraryBuilder destination={destination} />
         )}
 
-        <button onClick={handleSave} disabled={(status === "Visited" && rating === 0) || saving || toast}>
-          {saving ? "Saving..." : "Save"}
-        </button>
+        {user && (
+          <button onClick={handleSave} disabled={(status === "Visited" && rating === 0) || saving || toast}>
+            {saving ? "Saving..." : "Save"}
+          </button>
+        )}
       </div>
 
       {toast && (

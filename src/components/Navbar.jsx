@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FiSun, FiMoon, FiMenu, FiX, FiLogOut } from "react-icons/fi";
+import { FiSun, FiMoon, FiMenu, FiX, FiLogOut, FiLogIn } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
@@ -42,7 +42,7 @@ function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/auth");
+    navigate("/");
   };
 
   const close = () => setMenuOpen(false);
@@ -56,26 +56,48 @@ function Navbar() {
       </Link>
 
       <div ref={menuRef} className={`links ${menuOpen ? "open" : ""}`}>
-        <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`} onClick={close}>Explore</Link>
-        <Link to="/trips" className={`nav-link ${isActive("/trips") ? "active" : ""}`} onClick={close}>My Trips</Link>
-        <Link to="/map" className={`nav-link ${isActive("/map") ? "active" : ""}`} onClick={close}>My Map</Link>
+        <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`} onClick={close}>
+          Explore
+        </Link>
+        {user && (
+          <>
+            <Link to="/trips" className={`nav-link ${isActive("/trips") ? "active" : ""}`} onClick={close}>
+              My Trips
+            </Link>
+            <Link to="/map" className={`nav-link ${isActive("/map") ? "active" : ""}`} onClick={close}>
+              My Map
+            </Link>
+          </>
+        )}
       </div>
 
       <div className="actions">
-        {user && (
-          <div className="navbar-user-pill">
-            <div className="navbar-avatar">{initial}</div>
-            <span className="navbar-username">{user.firstName}</span>
-          </div>
+        {user ? (
+          <>
+            <div className="navbar-user-pill">
+              <div className="navbar-avatar">{initial}</div>
+              <span className="navbar-username">{user.firstName}</span>
+            </div>
+
+            <button onClick={toggleTheme} className="icon-btn theme-btn" title="Toggle theme">
+              {darkMode ? <FiSun /> : <FiMoon />}
+            </button>
+
+            <button onClick={handleLogout} className="icon-btn logout-btn" title="Logout">
+              <FiLogOut />
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={toggleTheme} className="icon-btn theme-btn" title="Toggle theme">
+              {darkMode ? <FiSun /> : <FiMoon />}
+            </button>
+
+            <Link to="/auth" className="login-btn">
+              <FiLogIn /> Login
+            </Link>
+          </>
         )}
-
-        <button onClick={toggleTheme} className="icon-btn theme-btn" title="Toggle theme">
-          {darkMode ? <FiSun /> : <FiMoon />}
-        </button>
-
-        <button onClick={handleLogout} className="icon-btn logout-btn" title="Logout">
-          <FiLogOut />
-        </button>
 
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <FiX /> : <FiMenu />}

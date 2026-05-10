@@ -1,14 +1,22 @@
 import { FiHeart } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
 import { updateDestination } from "../services/api";
 
 function DestinationCard({ destination }) {
   const { setDestinations } = useContext(AppContext);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const toggleLike = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
     const updated = await updateDestination(destination.id, {
       liked: !destination.liked,
     });
@@ -37,9 +45,7 @@ function DestinationCard({ destination }) {
 
         <div className="tags">
           {destination.tags?.map((tag) => (
-            <span key={tag} className="tag">
-              {tag}
-            </span>
+            <span key={tag} className="tag">{tag}</span>
           ))}
         </div>
       </div>
@@ -48,6 +54,7 @@ function DestinationCard({ destination }) {
         <button
           className={`like ${destination.liked ? "active" : ""}`}
           onClick={toggleLike}
+          title={!user ? "Login to like" : ""}
         >
           {destination.liked ? <FaHeart /> : <FiHeart />}
         </button>

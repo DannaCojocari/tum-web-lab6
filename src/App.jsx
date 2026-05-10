@@ -1,7 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import DestinationDetails from "./pages/DestinationDetails";
-import AddDestination from "./pages/AddDestination";
 import WorldMap from "./pages/WorldMap";
 import MyTrips from "./pages/MyTrips";
 import Navbar from "./components/Navbar";
@@ -22,16 +21,18 @@ function App() {
         <Route
           path="/*"
           element={
-            <ProtectedRoute>
+            <>
               <Navbar />
               <Routes>
+                {/* Public routes — visitors can browse */}
                 <Route path="/" element={<Home />} />
                 <Route path="/destination/:id" element={<DestinationDetails />} />
-                <Route path="/add" element={<AddDestination />} />
-                <Route path="/map" element={<WorldMap />} />
-                <Route path="/trips" element={<MyTrips />} />
+
+                {/* Protected routes — require login */}
+                <Route path="/map" element={<ProtectedRoute><WorldMap /></ProtectedRoute>} />
+                <Route path="/trips" element={<ProtectedRoute><MyTrips /></ProtectedRoute>} />
               </Routes>
-            </ProtectedRoute>
+            </>
           }
         />
       </Routes>

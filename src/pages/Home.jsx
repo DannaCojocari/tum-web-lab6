@@ -1,6 +1,8 @@
 import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import DestinationCard from "../components/DestinationCard";
 import { AppContext } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
 import { FiPlus, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import AddDestination from "../pages/AddDestination";
 
@@ -9,6 +11,7 @@ const PAGE_SIZE = 12;
 function Home() {
   const [search, setSearch] = useState("");
   const { destinations } = useContext(AppContext);
+  const { user } = useAuth();
   const continents = ["All", "Europe", "Asia", "America", "Africa", "Oceania"];
   const [continent, setContinent] = useState("All");
   const [page, setPage] = useState(1);
@@ -76,9 +79,15 @@ function Home() {
 
       <div className="section-header">
         <h2>Explore Destinations</h2>
-        <button className="add-btn" onClick={() => setShowForm(true)}>
-          <FiPlus /> Add Destination
-        </button>
+        {user ? (
+          <button className="add-btn" onClick={() => setShowForm(true)}>
+            <FiPlus /> Add Destination
+          </button>
+        ) : (
+          <Link to="/auth" className="details-btn" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            🔒 Login to add more destinations
+          </Link>
+        )}
       </div>
 
       <div className="grid">
