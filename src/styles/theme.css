@@ -621,6 +621,15 @@ h1, h2, h3, h4 {
   padding: 10px 14px 14px;
 }
 
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1;
+}
+
 /* ── Status Badge ──────────────────────────────────────────── */
 .status {
   position: absolute;
