@@ -4,6 +4,8 @@ import {
   getAll,
   getOne,
   getPublic,
+  getDemo,
+  deleteDemo,
   create,
   update,
   remove,
@@ -40,6 +42,62 @@ const router = Router();
  *         description: Paginated list of default destinations
  */
 router.get("/public", getPublic);
+
+/**
+ * @swagger
+ * /api/destinations/demo:
+ *   get:
+ *     summary: Demo endpoint — requires JWT with READ permission, no userId needed
+ *     description: Use this to test JWT authentication and pagination in Swagger. Get a token from /api/token first.
+ *     tags: [Destinations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: Paginated list of demo destinations
+ *       401:
+ *         description: Unauthorized — token missing or expired
+ *       403:
+ *         description: Forbidden — missing READ permission
+ */
+router.get("/demo", authenticate, requirePermission("READ"), getDemo);
+
+/**
+ * @swagger
+ * /api/destinations/demo/{id}:
+ *   delete:
+ *     summary: Demo delete — requires JWT with DELETE permission, doesn't actually delete anything
+ *     description: Use this to test DELETE permission in Swagger. Get a token from /api/token first.
+ *     tags: [Destinations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1001
+ *     responses:
+ *       200:
+ *         description: Demo delete successful (nothing actually deleted)
+ *       401:
+ *         description: Unauthorized — token missing or expired
+ *       403:
+ *         description: Forbidden — missing DELETE permission
+ */
+router.delete("/demo/:id", authenticate, requirePermission("DELETE"), deleteDemo);
 
 /**
  * @swagger

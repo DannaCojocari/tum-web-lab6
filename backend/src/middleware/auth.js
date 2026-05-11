@@ -12,19 +12,11 @@ export const authenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { role, permissions, iat, exp }
+    req.user = decoded; // { permissions, userId, iat, exp }
     next();
   } catch (err) {
     return res.status(401).json({ error: "Token expired or invalid" });
   }
-};
-
-// Role-based guard — usage: requireRole("ADMIN")
-export const requireRole = (role) => (req, res, next) => {
-  if (!req.user || req.user.role !== role) {
-    return res.status(403).json({ error: "Forbidden: insufficient role" });
-  }
-  next();
 };
 
 // Permission-based guard — usage: requirePermission("WRITE")

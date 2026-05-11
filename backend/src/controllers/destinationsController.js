@@ -15,6 +15,41 @@ const PUBLIC_DESTINATIONS = [
   { id: 1010, name: "Patagonia", country: "Argentina", continent: "America", image: "https://images.unsplash.com/photo-1501854140801-50d01698950b", tags: ["Adventure", "Mountains", "Nature"], description: "Raw wilderness at the end of the world with dramatic glaciers", status: "Wishlist", liked: false, rating: 0 },
 ];
 
+// DELETE /api/destinations/demo/:id — requires JWT with DELETE permission, demo only
+export const deleteDemo = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const exists = PUBLIC_DESTINATIONS.find((d) => d.id === id);
+
+    if (!exists) {
+      return res.status(404).json({ error: "Demo destination not found" });
+    }
+
+    // Don't actually delete anything — this is a demo endpoint
+    res.json({ message: `Demo: destination ${id} (${exists.name}) would be deleted` });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /api/destinations/demo — requires JWT but no userId
+export const getDemo = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+
+    const paginated = PUBLIC_DESTINATIONS.slice(offset, offset + limit);
+    const total = PUBLIC_DESTINATIONS.length;
+
+    res.json({
+      data: paginated,
+      pagination: { limit, offset, total },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // GET /api/destinations/public — no auth required
 export const getPublic = async (req, res, next) => {
   try {

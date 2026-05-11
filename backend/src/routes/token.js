@@ -7,7 +7,7 @@ const router = Router();
  * @swagger
  * /api/token:
  *   post:
- *     summary: Get a JWT token
+ *     summary: Get a demo JWT token with permissions (expires in 1 minute)
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -16,10 +16,6 @@ const router = Router();
  *           schema:
  *             type: object
  *             properties:
- *               role:
- *                 type: string
- *                 enum: [ADMIN, WRITER, VISITOR]
- *                 example: ADMIN
  *               permissions:
  *                 type: array
  *                 items:
@@ -36,22 +32,49 @@ const router = Router();
  *                 token:
  *                   type: string
  *       400:
- *         description: role or permissions required
+ *         description: permissions required
  */
 router.post("/", (req, res) => {
-  const { role, permissions } = req.body;
+  const { permissions } = req.body;
 
-  if (!role && !permissions) {
-    return res.status(400).json({ error: "Provide role or permissions" });
+  if (!permissions) {
+    return res.status(400).json({ error: "Provide permissions array" });
   }
 
-  const payload = {};
-  if (role) payload.role = role;
-  if (permissions) payload.permissions = permissions;
+  const token = jwt.sign({ permissions }, process.env.JWT_SECRET, { expiresIn: "1m" });
+  res.json({ token });
+});
 
-  // For demo: expires in 1 minute as per lab requirement
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1m" });
+/**
+ * @swagger
+ * /api/token:
+ *   get:
+ *     summary: Get a demo JWT token via query params (expires in 1 minute)
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: permissions
+ *         schema:
+ *           type: string
+ *         example: READ,WRITE,DELETE
+ *     responses:
+ *       200:
+ *         description: JWT token issued
+ *       400:
+ *         description: permissions required
+ */
+router.get("/", (req, res) => {
+  const { permissions } = req.query;
 
+  if (!permissions) {
+    return res.status(400).json({ error: "Provide permissions as query param" });
+  }
+
+  const token = jwt.sign(
+    { permissions: permissions.split(",") },
+    process.env.JWT_SECRET,
+    { expiresIn: "1m" }
+  );
   res.json({ token });
 });
 

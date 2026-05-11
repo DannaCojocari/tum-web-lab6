@@ -171,11 +171,10 @@ export const register = async (req, res, next) => {
         lastName: user.lastName,
         username: user.username,
         email: user.email,
-        role: "USER",
         permissions: ["READ", "WRITE", "DELETE"],
       },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "1d" }
     );
 
     res.status(201).json({ user, token });
@@ -220,11 +219,10 @@ export const login = async (req, res, next) => {
         lastName: user.lastName,
         username: user.username,
         email: user.email,
-        role: "USER",
         permissions: ["READ", "WRITE", "DELETE"],
       },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "1d" }
     );
 
     res.json({
